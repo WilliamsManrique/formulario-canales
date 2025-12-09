@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Equipo - Sistema CRUD</title>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Modificar Equipo</h1>
+            <p class="tagline">Actualizar información del equipo {{ equipo.codigo }}</p>
+        </div>
+
+        <!-- Alertas -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} fade-in">
+                        <span>
+                            {% if category == 'success' %}✅
+                            {% elif category == 'danger' %}❌
+                            {% elif category == 'warning' %}⚠️
+                            {% else %}ℹ️{% endif %}
+                        </span>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Formulario de Edición -->
+        <div class="card">
+            <h2 class="card-title">Editar Equipo: {{ equipo.codigo }}</h2>
+            <form method="POST" action="/actualizar/{{ equipo.id }}" class="form-grid">
+                <!-- Fila 1 -->
+                <div class="form-group">
+                    <label class="form-label required">Código</label>
+                    <input type="text" class="form-control" name="codigo" required 
+                           value="{{ equipo.codigo }}" pattern="[A-Z0-9\-_]+">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label required">Tipo de Equipo</label>
+                    <select class="form-control" name="tipo_equipo" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="Laptop" {% if equipo.tipo_equipo == 'Laptop' %}selected{% endif %}>Laptop</option>
+                        <option value="Desktop" {% if equipo.tipo_equipo == 'Desktop' %}selected{% endif %}>Desktop</option>
+                        <option value="Servidor" {% if equipo.tipo_equipo == 'Servidor' %}selected{% endif %}>Servidor</option>
+                        <option value="Tablet" {% if equipo.tipo_equipo == 'Tablet' %}selected{% endif %}>Tablet</option>
+                        <option value="Impresora" {% if equipo.tipo_equipo == 'Impresora' %}selected{% endif %}>Impresora</option>
+                        <option value="Router" {% if equipo.tipo_equipo == 'Router' %}selected{% endif %}>Router</option>
+                        <option value="Switch" {% if equipo.tipo_equipo == 'Switch' %}selected{% endif %}>Switch</option>
+                    </select>
+                </div>
+
+                <!-- Fila 2 -->
+                <div class="form-group">
+                    <label class="form-label required">Marca</label>
+                    <input type="text" class="form-control" name="marca" required 
+                           value="{{ equipo.marca }}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Modelo</label>
+                    <input type="text" class="form-control" name="modelo" 
+                           value="{{ equipo.modelo or '' }}">
+                </div>
+
+                <!-- Fila 3 -->
+                <div class="form-group">
+                    <label class="form-label">Sistema Operativo</label>
+                    <select class="form-control" name="sistema_operativo">
+                        <option value="">Seleccionar...</option>
+                        <option value="Windows 10" {% if equipo.sistema_operativo == 'Windows 10' %}selected{% endif %}>Windows 10</option>
+                        <option value="Windows 11" {% if equipo.sistema_operativo == 'Windows 11' %}selected{% endif %}>Windows 11</option>
+                        <option value="macOS" {% if equipo.sistema_operativo == 'macOS' %}selected{% endif %}>macOS</option>
+                        <option value="Linux Ubuntu" {% if equipo.sistema_operativo == 'Linux Ubuntu' %}selected{% endif %}>Linux Ubuntu</option>
+                        <option value="Linux CentOS" {% if equipo.sistema_operativo == 'Linux CentOS' %}selected{% endif %}>Linux CentOS</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Almacenamiento (GB)</label>
+                    <input type="number" class="form-control" name="almacenamiento_gb" 
+                           min="0" value="{{ equipo.almacenamiento_gb or '' }}">
+                </div>
+
+                <!-- Fila 4 -->
+                <div class="form-group">
+                    <label class="form-label">RAM</label>
+                    <select class="form-control" name="ram">
+                        <option value="">Seleccionar...</option>
+                        <option value="4 GB" {% if equipo.ram == '4 GB' %}selected{% endif %}>4 GB</option>
+                        <option value="8 GB" {% if equipo.ram == '8 GB' %}selected{% endif %}>8 GB</option>
+                        <option value="16 GB" {% if equipo.ram == '16 GB' %}selected{% endif %}>16 GB</option>
+                        <option value="32 GB" {% if equipo.ram == '32 GB' %}selected{% endif %}>32 GB</option>
+                        <option value="64 GB" {% if equipo.ram == '64 GB' %}selected{% endif %}>64 GB</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Estado</label>
+                    <select class="form-control" name="estado">
+                        <option value="Activo" {% if equipo.estado == 'Activo' %}selected{% endif %}>Activo</option>
+                        <option value="Inactivo" {% if equipo.estado == 'Inactivo' %}selected{% endif %}>Inactivo</option>
+                        <option value="En reparación" {% if equipo.estado == 'En reparación' %}selected{% endif %}>En reparación</option>
+                        <option value="Dañado" {% if equipo.estado == 'Dañado' %}selected{% endif %}>Dañado</option>
+                    </select>
+                </div>
+
+                <!-- Fila 5 -->
+                <div class="form-group">
+                    <label class="form-label">Fecha de Mantenimiento</label>
+                    <input type="date" class="form-control" name="fecha_mantenimiento" 
+                           value="{{ equipo.fecha_mantenimiento or hoy }}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Fecha de Registro</label>
+                    <input type="date" class="form-control" name="fecha_registro" 
+                           value="{{ equipo.fecha_registro or hoy }}">
+                </div>
+
+                <!-- Botones -->
+                <div class="form-group" style="grid-column: 1 / -1; margin-top: 20px;">
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-warning">
+                            ✏️ ACTUALIZAR EQUIPO
+                        </button>
+                        <a href="/" class="btn btn-secondary">Cancelar</a>
+                        <button type="button" class="btn btn-danger btn-eliminar-modal" 
+                                data-id="{{ equipo.id }}" 
+                                data-codigo="{{ equipo.codigo }}">
+                            🗑️ Eliminar Equipo
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Sistema de Gestión de Equipos CRUD | {{ hoy }}</p>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación para Eliminar -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <h3>Confirmar Eliminación</h3>
+            <p id="modalMessage">¿Está seguro que desea eliminar este equipo?</p>
+            <div class="modal-actions">
+                <button id="cancelBtn" class="btn btn-secondary">Cancelar</button>
+                <button id="confirmBtn" class="btn btn-danger">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/web.js') }}"></script>
+</body>
+</html>

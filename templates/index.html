@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Registro de Equipos - CRUD Completo</title>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Registro de Equipos</h1>
+            <p class="tagline">Sistema CRUD: Crear, Leer, Actualizar, Eliminar</p>
+        </div>
+
+        <!-- Barra de Búsqueda -->
+        <div class="card">
+            <div class="search-container">
+                <form method="GET" action="/buscar" class="search-form">
+                    <div class="search-group">
+                        <input type="text" class="search-input" name="q" 
+                               placeholder="Buscar equipos por código, tipo, marca, modelo..." 
+                               value="{{ busqueda }}">
+                        <button type="submit" class="btn btn-search">
+                            🔍 Buscar
+                        </button>
+                        {% if busqueda %}
+                        <a href="/" class="btn btn-secondary">Limpiar Búsqueda</a>
+                        {% endif %}
+                    </div>
+                </form>
+                {% if busqueda %}
+                <div class="search-results">
+                    <p>Resultados para: <strong>"{{ busqueda }}"</strong></p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Alertas -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} fade-in">
+                        <span>
+                            {% if category == 'success' %}✅
+                            {% elif category == 'danger' %}❌
+                            {% elif category == 'warning' %}⚠️
+                            {% else %}ℹ️{% endif %}
+                        </span>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Formulario de Registro -->
+        <div class="card">
+            <h2 class="card-title">Formulario de Registro de Equipos</h2>
+            <form method="POST" action="/registrar" class="form-grid">
+                <!-- Fila 1 -->
+                <div class="form-group">
+                    <label class="form-label required">Código</label>
+                    <input type="text" class="form-control" name="codigo" required 
+                           placeholder="EQ001" pattern="[A-Z0-9\-_]+">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label required">Tipo de Equipo</label>
+                    <select class="form-control" name="tipo_equipo" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="Laptop">Laptop</option>
+                        <option value="Desktop">Desktop</option>
+                        <option value="Servidor">Servidor</option>
+                        <option value="Tablet">Tablet</option>
+                        <option value="Impresora">Impresora</option>
+                        <option value="Router">Router</option>
+                        <option value="Switch">Switch</option>
+                    </select>
+                </div>
+
+                <!-- Fila 2 -->
+                <div class="form-group">
+                    <label class="form-label required">Marca</label>
+                    <input type="text" class="form-control" name="marca" required 
+                           placeholder="Dell, HP, Lenovo">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Modelo</label>
+                    <input type="text" class="form-control" name="modelo" 
+                           placeholder="XPS 13, ThinkPad">
+                </div>
+
+                <!-- Fila 3 -->
+                <div class="form-group">
+                    <label class="form-label">Sistema Operativo</label>
+                    <select class="form-control" name="sistema_operativo">
+                        <option value="">Seleccionar...</option>
+                        <option value="Windows 10">Windows 10</option>
+                        <option value="Windows 11">Windows 11</option>
+                        <option value="macOS">macOS</option>
+                        <option value="Linux Ubuntu">Linux Ubuntu</option>
+                        <option value="Linux CentOS">Linux CentOS</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Almacenamiento (GB)</label>
+                    <input type="number" class="form-control" name="almacenamiento_gb" 
+                           min="0" placeholder="256, 512, 1024">
+                </div>
+
+                <!-- Fila 4 -->
+                <div class="form-group">
+                    <label class="form-label">RAM</label>
+                    <select class="form-control" name="ram">
+                        <option value="">Seleccionar...</option>
+                        <option value="4 GB">4 GB</option>
+                        <option value="8 GB">8 GB</option>
+                        <option value="16 GB">16 GB</option>
+                        <option value="32 GB">32 GB</option>
+                        <option value="64 GB">64 GB</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Estado</label>
+                    <select class="form-control" name="estado">
+                        <option value="Activo">Activo</option>
+                        <option value="Inactivo">Inactivo</option>
+                        <option value="En reparación">En reparación</option>
+                        <option value="Dañado">Dañado</option>
+                    </select>
+                </div>
+
+                <!-- Fila 5 -->
+                <div class="form-group">
+                    <label class="form-label">Fecha de Mantenimiento</label>
+                    <input type="date" class="form-control" name="fecha_mantenimiento" 
+                           value="{{ hoy }}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Fecha de Registro</label>
+                    <input type="date" class="form-control" name="fecha_registro" 
+                           value="{{ hoy }}">
+                </div>
+
+                <!-- Botón -->
+                <div class="form-group" style="grid-column: 1 / -1; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px;">
+                        ✅ REGISTRAR NUEVO EQUIPO
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Lista de Equipos con Acciones -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Equipos Registrados</h2>
+                <div class="card-actions">
+                    <span class="badge badge-info">{{ equipos|length }} equipos</span>
+                </div>
+            </div>
+            
+            {% if equipos %}
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Tipo</th>
+                                <th>Marca</th>
+                                <th>Modelo</th>
+                                <th>Sistema</th>
+                                <th>RAM</th>
+                                <th>Almacenamiento</th>
+                                <th>Estado</th>
+                                <th>Mantenimiento</th>
+                                <th>Registro</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for equipo in equipos %}
+                            <tr class="fade-in">
+                                <td><strong>{{ equipo.codigo }}</strong></td>
+                                <td>{{ equipo.tipo_equipo }}</td>
+                                <td>{{ equipo.marca }}</td>
+                                <td>{{ equipo.modelo or '-' }}</td>
+                                <td>{{ equipo.sistema_operativo or '-' }}</td>
+                                <td>{{ equipo.ram or '-' }}</td>
+                                <td>
+                                    {% if equipo.almacenamiento_gb %}
+                                        {{ equipo.almacenamiento_gb }} GB
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if equipo.estado == 'Activo' %}
+                                        <span class="badge badge-success">Activo</span>
+                                    {% elif equipo.estado == 'En reparación' %}
+                                        <span class="badge badge-warning">Reparación</span>
+                                    {% elif equipo.estado == 'Inactivo' %}
+                                        <span class="badge badge-secondary">Inactivo</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">{{ equipo.estado }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ equipo.fecha_mantenimiento or '-' }}</td>
+                                <td>{{ equipo.fecha_registro or '-' }}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="/editar/{{ equipo.id }}" class="btn btn-warning btn-sm">
+                                            ✏️ Modificar
+                                        </a>
+                                        <button class="btn btn-danger btn-sm btn-eliminar" 
+                                                data-id="{{ equipo.id }}" 
+                                                data-codigo="{{ equipo.codigo }}">
+                                            🗑️ Eliminar
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    {% if busqueda %}
+                        <h3>No se encontraron equipos</h3>
+                        <p>No hay resultados para "{{ busqueda }}"</p>
+                        <a href="/" class="btn btn-primary">Ver todos los equipos</a>
+                    {% else %}
+                        <h3>No hay equipos registrados</h3>
+                        <p>Comienza registrando tu primer equipo</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Sistema de Gestión de Equipos CRUD | {{ hoy }}</p>
+            <p class="status">
+                <span class="status-indicator active"></span>
+                Conectado a MySQL RDS AWS | Funciones: Crear, Buscar, Modificar, Eliminar
+            </p>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación para Eliminar -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <h3>Confirmar Eliminación</h3>
+            <p id="modalMessage">¿Está seguro que desea eliminar este equipo?</p>
+            <div class="modal-actions">
+                <button id="cancelBtn" class="btn btn-secondary">Cancelar</button>
+                <button id="confirmBtn" class="btn btn-danger">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/web.js') }}"></script>
+</body>
+</html>
