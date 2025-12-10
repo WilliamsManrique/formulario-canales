@@ -10,10 +10,10 @@ def get_db_connection():
     """Conectar a MySQL RDS"""
     try:
         conn = mysql.connector.connect(
-            host=os.environ.get("DB_HOST", "database-1.cpcwiiu4yk22.us-east-1.rds.amazonaws.com"),
+            host=os.environ.get("DB_HOST", "database-2.cpcwiiu4yk22.us-east-1.rds.amazonaws.com"),
             database=os.environ.get("DB_NAME", "FormularioWeb"),
             user=os.environ.get("DB_USER", "admin"),
-            password=os.environ.get("DB_PASS", "123456789"),
+            password=os.environ.get("DB_PASS", "12345678"),
             port=int(os.environ.get("DB_PORT", 3306))
         )
         return conn
